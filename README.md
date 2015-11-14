@@ -18,4 +18,4 @@ To execute these simulations, place the .py files in a common directory. Then, f
 python StandardNameGame.py <population size> <number of simulations> <file number> <output path>
 ````
 
-Outputs a csv file that 
+Outputs a csv file that shows the results.
