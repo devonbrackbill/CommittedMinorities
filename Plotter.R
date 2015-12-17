@@ -23,7 +23,7 @@ results.df %>%
 
 png(file='Results.png',
     type = 'cairo', units = 'in',
-    width = 7,  height = 7,  pointsize = 1,  res =200)
+    width = 5,  height = 5,  pointsize = 1,  res =100)
 
 results.df$prop_CM = as.numeric(as.character(results.df$prop_CM))
 results.df$proportionA_NoCM = 
@@ -34,12 +34,13 @@ ggplot(results.df, aes(x=prop_CM, y = proportionA_NoCM))+
   facet_grid(.~popSize)+
   ylab('Proportion of Non-Committed Population\nAdopting New Norm at End\n')+
   xlab('\n Proportion of Population Initially Committed to New Norm')+
-  theme(axis.title.y = element_text(size = 14),
-        axis.title.x = element_text(size = 14),
-        axis.text.x = element_text(size=12,angle = 0, vjust = 0),
-        axis.text.y = element_text(size = 12),
-        strip.text.y = element_text(size = 14),
-        panel.grid.minor = element_blank()
+  theme(axis.title.y = element_text(size = 10),
+        axis.title.x = element_text(size = 10),
+        axis.text.x = element_text(size=10,angle = 0, vjust = 0),
+        axis.text.y = element_text(size = 10),
+        strip.text.y = element_text(size = 10),
+        panel.grid.minor = element_blank(),
+        plot.margin = unit(c(1,1,1,1), "cm")
         )+
   stat_summary(fun.y=median, colour="red", geom="point", 
                shape=18, size=3,show_guide = FALSE)+
