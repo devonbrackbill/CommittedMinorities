@@ -6,11 +6,20 @@ Created on Sun Aug 30 08:38:50 2015
 
 Simulations for Committed Minorities in the Standard Name Game.
 
-Question: "What fraction of a population needs to be committed
-to sway a majority to adopt a new, minority convention?"
+Question: "In a population where everyone uses norm B,
+what fraction of the population needs to be committed to a new norm A
+to sway the majority to adopt this new minority convention?"
 
 Answer: ~10%
 
+With 2 norms, there are 2 fixed points in the system that vary as a function
+of the proportion of the population that are committed agents.
+There is a phase transition from a regime where there is virtually no adoption
+when there is less than ~10% committed agents to a regime where there is
+universal adoption above this threshold.
+
+The model is based on agents who are just trying to coordinate
+and who have an interaction strategy described in Baronchelli et al. 2006
 """
 
 from __future__ import division
@@ -22,10 +31,11 @@ import sys
 class SNGAgent():
     '''
     each Agent can speak() to another agent by choosing a random word from
-    its memory, unless it's a robot. Robots always play the same name
+    its memory, unless it's a robot. Robots always play the same name.
+    Robot = committed agent.
     
     PARAMS:
-    id = unique id number (not really used).
+    id = unique id number for each agent
     memory = vector of unique memories
     is_robot = whether agent is committed to the new norm
     '''
@@ -49,7 +59,8 @@ class SNGHerd():
     
     PARAMS:
     popSize = number of Agents in the Herd
-    prop_CM = proportion of population that is committed (e.g., a robot)
+    prop_CM = proportion of population that is committed to the new norm Agent
+    (e.g., a robot)
     '''
 
     def __init__(self, popSize, prop_CM=0):
@@ -72,7 +83,7 @@ class SNGHerd():
         First, a speaker speak()'s
         Then, a hearer checks its memory for a match
         If a match, both hearer and speaker trim memory to that word only.
-        Else, hearer adds word to memory
+        Else, hearer adds word to memory.
         '''
         speaker_num = random.randrange(start=0, stop=self.popSize,step=1)
         hearer_num = random.randrange(start=0, stop=self.popSize,step=1)
@@ -94,7 +105,8 @@ class SNGHerd():
         if hearer.is_robot:
             hearer.memory = ['A']
             
-        # ensure memories have unique sets
+        # ensure memories have unique sets 
+        # (mostly a leftover from running sims with >2 norms in the population)
         speaker.memory = list(set(speaker.memory))
         hearer.memory = list(set(hearer.memory))
         
@@ -109,7 +121,7 @@ def CMSim(n, proportion_cm, num_rounds=100):
         proportionA: proportion of final n interactions that involved speaking norm A
         proportionB: ...and speaking norm B
         popSize: the size of the Herd
-        maxMemory: a dummy indicator to compare with simulations from a separate model
+        maxMemory: a dummy indicator to compare with simulations from a separate model (not included here)
         prop_CM: proportion who were committed agents (e.g., robots) in the population
     
     PARAMS:
@@ -126,12 +138,14 @@ def CMSim(n, proportion_cm, num_rounds=100):
     while True:
         iterations += 1
         play = the_herd.Interact()
-        #print play
+
         history.append(play)
         
+        # end if max interactions reached
         if iterations > num_rounds*the_herd.popSize:
             break
         
+        # end if group converges on a norm
         if iterations % n == 0:
             if history[-the_herd.popSize:].count('A')/ the_herd.popSize == 1:
                 break
@@ -153,7 +167,12 @@ def main(argv):
     The output is a dataframe object that lists the results of the simulations
     The function appends to the output file as it runs, so it is possible to
         copy this file to a separate directory and open it to view the results
-        so far.
+        while the simulator is running.
+    Note, this constant appending slows performance, but I usually run this on
+        multiple machines (e.g., 100 of the cheapest instances on Digital Ocean)
+        and just collect the data from all the machines until I have the number of 
+        simulations I want.
+        
     
     PARAMS TO COMMAND LINE:
     [1] = popSize = population size
@@ -165,20 +184,22 @@ def main(argv):
     
     if len(argv)!=5:
         raise ValueError('Invoke with: python StandardNameGame.py <population size> <number of simulations> <file number> <output path>')
-		
+        
     popSize = int(argv[1])
     num_sims = int(argv[2])
     '''new method for naming filenums directly in cmd line call'''
     FILE_NUM = int(argv[3])
     PATH_TO_OUTPUT  = argv[4]
 
+    # change this as desired to run different ranges of proportion CM
     prop_CM = range(5, 31)
     prop_CMs = [x / 100 for x in prop_CM]
     
     counter = 0
     for sim in range(0,num_sims):
         for prop_CM in prop_CMs:
-            if counter % 10 == 0 :
+            # adjust this counter b/c it can get annoying (maybe adjust this automatically based on population size and num_sims?)
+            if counter % 100 == 0 :
                 print '%d simulations complete' % counter
             
             results = CMSim(popSize, prop_CM)
