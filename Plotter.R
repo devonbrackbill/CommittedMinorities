@@ -23,7 +23,7 @@ results.df %>%
 
 png(file='Results.png',
     type = 'cairo', units = 'in',
-    width = 5,  height = 5,  pointsize = 1,  res =200)
+    width = 5,  height = 5,  pointsize = 1,  res =100)
 
 results.df$prop_CM = as.numeric(as.character(results.df$prop_CM))
 results.df$proportionA_NoCM = 
