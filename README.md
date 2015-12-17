@@ -33,6 +33,8 @@ Alternatively, you can run the example simulation using the shell script from th
 example_simulation.sh
 ````
 
+Please change the output directory in example_simulation.sh prior to running.
+
 This will produce the figure Results.png. It should look like the following, which shows a critical threshold at ~10%:
 
 <img src="figure.png" alt="Simulation of Committed Minorities" style="width:304px">
